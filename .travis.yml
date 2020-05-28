@@ -1,98 +1,80 @@
 language: python
 script: pytest
 os: linux
-
 before_install:
-    # Additional info about the build
-  - uname -a
-  - df -h
-  - ulimit -a
-
-    # Install the Python environment
-  - source devtools/travis-ci/before_install.sh
-  - python -V
-
+- uname -a
+- df -h
+- ulimit -a
+- source devtools/travis-ci/before_install.sh
+- python -V
 install:
-    # Create test environment for package
-  - python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
-    # Activate the test environment
-  - conda activate test
-    # Build and install package
-    #- python setup.py develop --no-deps
-  - pip install -e .
-    # Print details of the environment
-  - conda list
-  - pip freeze
-
+- python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
+- conda activate test
+- pip install -e .
+- conda list
+- pip freeze
 notifications:
-    email: false
-
+  email: false
 stages:
-  - lint
-  - test
-  - deploy
-
+- lint
+- test
+- deploy
 jobs:
   fast_finish: true
   include:
-    - stage: lint
-      name: "Check formatting of code for PEP-8"
-      os: linux
-      language: generic
-      env: PYTHON_VER=3.7
-      script:
-        - flake8 seamm_jobserver tests
-        - yapf --diff --recursive  seamm_jobserver tests
-
-    - stage: test
-      name: "Tests on MacOS Python 3.6"
-      script:
-        - pytest -v tests/
-      os: osx
-      language: generic
-      env: PYTHON_VER=3.6
-
-    - stage: test
-      name: "Tests on MacOS Python 3.7"
-      script:
-        - pytest -v tests/
-      os: osx
-      language: generic
-      env: PYTHON_VER=3.7
-
-    - stage: test
-      name: "Tests on Linux Python 3.6"
-      script:
-        - pytest -v tests/
-      os: linux
-      language: generic  # No need to set Python version since its conda
-      env: PYTHON_VER=3.6
-
-    - stage: test
-      name: "Tests and coverage on Linux Python 3.7"
-      script:
-        - pytest -v --cov=seamm_jobserver tests/
-      after_success:
-        - codecov
-      os: linux
-      language: generic
-      env: PYTHON_VER=3.7
-
-    - stage: deploy
-      name: "Deploy to PyPi"
-      if: tag IS present
-      os: linux
-      dist: xenial
-      python: 3.7
-      script: skip
-      deploy:
-        provider: pypi
-        distributions: sdist bdist_wheel
-        skip_existing: true
-        on:
-          condition: $PYTHON_VER = 3.7
-          condition: $TRAVIS_OS_NAME = linux
-          repo: molssi-seamm/seamm_jobserver
-          tags: true
-        username: seamm
-        password:
+  - stage: lint
+    name: Check formatting of code for PEP-8
+    os: linux
+    language: generic
+    env: PYTHON_VER=3.7
+    script:
+    - flake8 seamm_jobserver tests
+    - yapf --diff --recursive  seamm_jobserver tests
+  - stage: test
+    name: Tests on MacOS Python 3.6
+    script:
+    - pytest -v tests/
+    os: osx
+    language: generic
+    env: PYTHON_VER=3.6
+  - stage: test
+    name: Tests on MacOS Python 3.7
+    script:
+    - pytest -v tests/
+    os: osx
+    language: generic
+    env: PYTHON_VER=3.7
+  - stage: test
+    name: Tests on Linux Python 3.6
+    script:
+    - pytest -v tests/
+    os: linux
+    language: generic
+    env: PYTHON_VER=3.6
+  - stage: test
+    name: Tests and coverage on Linux Python 3.7
+    script:
+    - pytest -v --cov=seamm_jobserver tests/
+    after_success:
+    - codecov
+    os: linux
+    language: generic
+    env: PYTHON_VER=3.7
+  - stage: deploy
+    name: Deploy to PyPi
+    if: tag IS present
+    os: linux
+    dist: xenial
+    python: 3.7
+    script: skip
+    deploy:
+      provider: pypi
+      distributions: sdist bdist_wheel
+      skip_existing: true
+      on:
+        condition: "$TRAVIS_OS_NAME = linux"
+        repo: molssi-seamm/seamm_jobserver
+        tags: true
+      username: seamm
+      password: 
+        secure: C1iTVLXeMOnQK/w6SBU0MyCAcNyPvXG3z8bJLi+PcBWKnry+g8AcFNCL4AXS3rf/SIHUbKrEgqMP1NRP6oEltnDq5QbX/sDVqSDOoj0PA7MGKgOYSpylII7otP2StP4xCR7fV/LAMScYRr+bX0A2vL6sz3wb0Jq9/Xmsjf57yy2Uu46L3PUgfC3q8utBZQEr5dfgn6Lj4xNTgerJidPMlV8vZU34RYTRxFWZZ4dsZgpZ1pzW+Dk8Czp1Fv+0F4cEGcHcOhDwkqG3NMwMMGrVauSOHGm8EiOxXk/O2gttt5EYEMYpAraKQmDMpVro/CekhpuvXjqKRWwh98jRGqTn0AjCPjK+vBcdkZ059AW9p/+NzNwBG+ZK7cHUdRrn61+C0rf1mPm+rhaaYIGPBYqIv/cGkk5ZokG99P+ZrMAotIKhcrM1LiYhk+h3nkg0m86v32lLLKSqQ8MAldFaen4INQkmH1UjosCfb/sj30PkXMivfeB1Rf3sGnUNhheAW2KYk6MqqHkyMeuCr/V/F4dkjCVkeNa3E4tdAMINfeL4QQqcDahQXwOmRf/54NY/baHpZjqZtM3+a7kk3VZGxJkz9MXso7W3PZI6kznJRMS4N/4BrDVWF/Li/36kvCiQBler31/4nhfRFvnTdny+gluQ7KR6e6ji1gnPjhiXyIxq3K4=
