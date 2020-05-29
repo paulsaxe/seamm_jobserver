@@ -7,6 +7,8 @@ dependencies:
     # Base depends
   - python
   - pip
+  - configargparse
+  - py-cpuinfo
 
     # Testing
   - coverage
