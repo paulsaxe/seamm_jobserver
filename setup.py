@@ -77,4 +77,9 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
+    entry_points={
+        'console_scripts': [
+            'jobserver=seamm_jobserver.run_jobserver:run'
+        ],
+    }
 )
