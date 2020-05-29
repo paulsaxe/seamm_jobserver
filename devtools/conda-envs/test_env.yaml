@@ -19,6 +19,7 @@ dependencies:
 
   # Pip-only installs
   - pip:
+    - fasteners
     - Pmw
     - seamm>=0.9
     - seamm-util>=0.7
