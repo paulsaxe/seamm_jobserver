@@ -32,9 +32,10 @@ setup(
     author_email='psaxe@molssi.org',
     description=short_description[1],
     long_description=readme + '\n\n' + history,
+    long_description_content_type='text/markdown',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    license='BSD-3-Clause',
+    license='LGPLv3+',
     url='https://github.com/molssi-seam/seamm_jobserver',
 
     # Which Python importable modules should be included when your package is
@@ -69,13 +70,16 @@ setup(
     keywords='seamm_jobserver',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'Intended Audience :: Science/Research',
+        ('License :: OSI Approved :: GNU Lesser General Public License v3 or '
+         'later (LGPLv3+)'),
         'Natural Language :: English',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Chemistry',
     ],
     entry_points={
         'console_scripts': [
