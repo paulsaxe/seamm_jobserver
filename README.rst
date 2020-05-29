@@ -1,6 +1,6 @@
-=============
+===============
 SEAMM JobServer
-=============
+===============
 
 
 .. image:: https://img.shields.io/travis/molssi-seamm/seamm_jobserver.svg
