@@ -1,5 +1,5 @@
 =============
-SEAMM Widgets
+SEAMM JobServer
 =============
 
 
