@@ -5,13 +5,14 @@
 """
 
 import asyncio
-import configargparse
 import logging
 from pathlib import Path
 
+import configargparse
+
 import seamm_jobserver
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('JobServer')
 
 
 def run():
@@ -55,23 +56,44 @@ def run():
         action="store",
         help="The interval for checking for new jobs."
     )
+    parser.add_argument(
+        "--jobserver-logfile",
+        default='%datastore%/logs/jobserver.log',
+        action="store",
+        help="Where to save the logs. "
+    )
+    parser.add_argument(
+        "--jobserver-log-level",
+        default='INFO',
+        choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'],
+        type=str.upper,
+        help="The logging level for the JobServer."
+    )
 
-    args, unknown = parser.parse_known_args()
+    options, unknown = parser.parse_known_args()
 
-    # Set up logging level to WARNING by default, going more verbose
+    # Where is the datastore?
+    datastore = Path(options.datastore).expanduser()
+
+    # Make sure the logs folder exists (avoid FileNotFoundError)
+    logfile = Path(
+        options.jobserver_logfile.replace('%datastore%', str(datastore))
+    )
+
+    # Setup overall logging level to WARNING by default, going more verbose
     # for each new -v, to INFO and then DEBUG and finally ALL with 3 -v's
 
-    numeric_level = max(3 - args.verbose_count, 0) * 10
-    logging.basicConfig(level=numeric_level)
+    numeric_level = max(3 - options.verbose_count, 0) * 10
+    logging.basicConfig(level=numeric_level, filename=logfile)
 
-    # Create the working directory where files, output, etc. go.
-    # At the moment this is datastore/job_id
+    # Set the logging level for the JobServer itself
+    logger.setLevel(options.jobserver_log_level)
 
-    datastore = Path(args.datastore).expanduser()
+    # Get the database file / instance
     db_path = datastore / 'seamm.db'
 
     jobserver = seamm_jobserver.JobServer(
-        db_path=db_path, check_interval=args.check_interval
+        db_path=db_path, check_interval=options.check_interval, logger=logger
     )
 
     asyncio.run(jobserver.start())
