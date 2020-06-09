@@ -9,39 +9,17 @@ import asyncio
 from datetime import datetime
 import functools
 import logging
-import random
+import multiprocessing
 import sqlite3
-import time
 
 from seamm import run_flowchart
 
 logger = logging.getLogger(__name__)
 
 
-async def run_job(job_id):
-    """Run the given job.
-
-    Parameters
-    ----------
-    job_id : integer
-        The id of the job to run.
-    """
-    logger.debug('Running job {}'.format(job_id))
-    print('Running job {}'.format(job_id))
-
-    t = random.randint(5, 25)
-    logger.debug('  run will take {} seconds'.format(t))
-    time.sleep(t)
-
-    return {
-        'task': 'ran job',
-        'job_id': job_id
-    }  # yapf: disable
-
-
 class JobServer(object):
 
-    def __init__(self, db_path=None, check_interval=5):
+    def __init__(self, db_path=None, check_interval=5, logger=logger):
         """Initialize the instance
 
         Parameters
@@ -51,11 +29,13 @@ class JobServer(object):
         """
         super().__init__()
 
+        self.logger = logger
         self.stop = False
         self._db = None
         self._db_path = None
         self.check_interval = check_interval
         self._tasks = set()
+        self._jobs = {}
 
         # This will open the database if it is given.
         self.db_path = db_path
@@ -90,7 +70,6 @@ class JobServer(object):
             # If nothing to do sleep and then check for new jobs
             if len(self._tasks) == 0:
                 await asyncio.sleep(self.check_interval)
-                self.check_for_jobs()
             else:
                 done, pending = await asyncio.wait(
                     self._tasks,
@@ -102,19 +81,12 @@ class JobServer(object):
 
                 for task in done:
                     result = task.result()
-                    logger.warning('Task finished, result = {}'.format(result))
+                    self.logger.info(
+                        'Task finished, result = {}'.format(result)
+                    )
 
-                    if result['task'] == 'ran job':
-                        job_id = result['job_id']
-                        cursor = self.db.cursor()
-                        cursor.execute(
-                            "UPDATE job SET status='Finished', started = ? "
-                            "WHERE id = ?", (datetime.utcnow(), job_id)
-                        )
-                        self.db.commit()
-                        logger.warning('Job {} finished.'.format(job_id))
-
-                self.check_for_jobs()
+            self.check_for_finished_jobs()
+            self.check_for_new_jobs()
 
     def add_task(self, coroutine):
         """Add a new task to the queue.
@@ -139,17 +111,16 @@ class JobServer(object):
             loop.run_in_executor(None, functools.partial(coroutine, *args))
         )
 
-    def check_for_jobs(self):
+    def check_for_new_jobs(self):
         """Check the database for new jobs that are runnable."""
         cursor = self.db.cursor()
-        logger.debug("Checking jobs in datastore")
+        self.logger.debug("Checking jobs in datastore")
         cursor.execute("SELECT id, path FROM job WHERE status = 'Submitted'")
         while True:
             result = cursor.fetchone()
             if result is None:
                 break
             job_id, path = result
-            logger.warning('Starting job {}'.format(job_id))
 
             cursor = self.db.cursor()
             cursor.execute(
@@ -158,11 +129,9 @@ class JobServer(object):
             )
             self.db.commit()
 
-            # self.add_blocking_task(self.run_job, job_id)
-            self.add_task(self.run_job2(job_id, path))
-            logger.warning('Submitted job {}'.format(job_id))
+            self.start_job(job_id, path)
 
-    async def run_job2(self, job_id, wdir):
+    def start_job(self, job_id, wdir):
         """Run the given job.
 
         Parameters
@@ -170,37 +139,39 @@ class JobServer(object):
         job_id : integer
             The id of the job to run.
         """
-        logger.warning('Running job {}'.format(job_id))
+        self.logger.info('Starting job {}'.format(job_id))
 
-        run_flowchart(job_id=job_id, wdir=wdir)
+        process = multiprocessing.Process(
+            target=run_flowchart,
+            kwargs={
+                'job_id': job_id,
+                'wdir': wdir
+            },
+            name='Job_{:06d}'.format(job_id)
+        )
+        self._jobs[job_id] = process
+        process.start()
+        self.logger.info('   pid = {}'.format(process.pid))
 
-        logger.warning('Completed job {}'.format(job_id))
-
-        return {
-            'task': 'ran job',
-            'job_id': job_id
-        }  # yapf: disable
-
-    async def run_job_in_thread(self, job_id):
-        """Run the given job.
-
-        Parameters
-        ----------
-        job_id : integer
-            The id of the job to run.
+    def check_for_finished_jobs(self):
+        """Check whether jobs have finished.
         """
-        logger.debug('Running job {} in a thread'.format(job_id))
-
-        loop = asyncio.get_event_loop()
-        # result = await loop.run_in_executor(
-        #     None, functools.partial(run_job, job_id)
-        # )
-        tmp = []
-        tmp.append(loop.run_in_executor(None, run_job, job_id))
-        completed, pending = await asyncio.wait(tmp)
-        for task in completed:
-            result = task.result()
-
-        logger.debug('Return from job {} in thread: {}'.format(job_id, result))
-
-        return result
+        finished = []
+        for job_id, process in self._jobs.items():
+            if process.is_alive():
+                self.logger.info('Job {} is running'.format(job_id))
+            else:
+                finished.append(job_id)
+                status = process.exitcode
+                process.close()
+                self.logger.info(
+                    'Job {} finished, code={}.'.format(job_id, status)
+                )
+                cursor = self.db.cursor()
+                cursor.execute(
+                    "UPDATE job SET status='Finished', finished = ? "
+                    "WHERE id = ?", (datetime.utcnow(), job_id)
+                )
+                self.db.commit()
+        for job_id in finished:
+            del self._jobs[job_id]
