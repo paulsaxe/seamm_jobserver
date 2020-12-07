@@ -145,7 +145,8 @@ class JobServer(object):
             target=run_flowchart,
             kwargs={
                 'job_id': job_id,
-                'wdir': wdir
+                'wdir': wdir,
+                'in_jobserver': True,
             },
             name='Job_{:06d}'.format(job_id)
         )
@@ -159,7 +160,7 @@ class JobServer(object):
         finished = []
         for job_id, process in self._jobs.items():
             if process.is_alive():
-                self.logger.info('Job {} is running'.format(job_id))
+                self.logger.debug('Job {} is running'.format(job_id))
             else:
                 finished.append(job_id)
                 status = process.exitcode
