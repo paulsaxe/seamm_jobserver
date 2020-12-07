@@ -1,3 +1,1 @@
-configargparse
-seamm>=0.9
-Pmw
+seamm
