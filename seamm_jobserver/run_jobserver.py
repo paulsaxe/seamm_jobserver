@@ -8,8 +8,7 @@ import asyncio
 import logging
 from pathlib import Path
 
-import configargparse
-
+import seamm
 import seamm_jobserver
 
 logger = logging.getLogger('JobServer')
@@ -19,82 +18,119 @@ def run():
     """The standalone JobServer app.
     """
 
-    parser = configargparse.ArgParser(
-        auto_env_var_prefix='',
-        default_config_files=[
-            '/etc/seamm/seamm.ini',
-            '~/.seamm/seamm.ini',
+    parser = seamm.getParser(
+        ini_files=[
+            'etc/seamm/jobserver.ini',
+            '~/.seamm/jobserver.ini',
+            'jobserver.ini'
         ],
-        description='Run the JobServer standalone'
+    )  # yapf: disable
+
+    parser.add_parser('JobServer')
+
+    parser.add_argument(
+        'JobServer',
+        '--log-level',
+        default='WARNING',
+        type=str.upper,
+        choices=['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        help=(
+            "The level of informational output, defaults to "
+            "'%(default)s'"
+        )
     )
 
     parser.add_argument(
-        '--seamm-configfile',
-        is_config_file=True,
-        default=None,
-        help='a configuration file to override others'
+        'JobServer',
+        '--job-log-level',
+        default='WARNING',
+        type=str.upper,
+        choices=['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        help=(
+            "The level of informational output for jobs, defaults to "
+            "'%(default)s'"
+        )
     )
+
     parser.add_argument(
-        "-v",
-        "--verbose",
-        dest="verbose_count",
-        action="count",
-        default=0,
-        help="increases log verbosity for each occurence."
-    )
-    parser.add_argument(
+        'JobServer',
         "--datastore",
         dest="datastore",
         default='.',
         action="store",
-        env_var='SEAMM_DATASTORE',
         help="The datastore (directory) for this run."
     )
+
     parser.add_argument(
+        'JobServer',
         "--check-interval",
         default=5,
         action="store",
         help="The interval for checking for new jobs."
     )
+
     parser.add_argument(
-        "--jobserver-logfile",
-        default='%datastore%/logs/jobserver.log',
+        'JobServer',
+        "--log-file",
+        default='${datastore}/logs/jobserver.log',
         action="store",
-        help="Where to save the logs. "
-    )
-    parser.add_argument(
-        "--jobserver-log-level",
-        default='INFO',
-        choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'],
-        type=str.upper,
-        help="The logging level for the JobServer."
+        help="Where to save the logs."
     )
 
-    options, unknown = parser.parse_known_args()
+    # Get the options
+    parser.parse_args()
+    options = parser.get_options('JobServer')
+    ini_files_used = parser.get_ini_files()
 
     # Where is the datastore?
-    datastore = Path(options.datastore).expanduser()
+    datastore = Path(options['datastore']).expanduser()
 
     # Make sure the logs folder exists (avoid FileNotFoundError)
-    logfile = Path(
-        options.jobserver_logfile.replace('%datastore%', str(datastore))
-    )
+    logfile = Path(options['log_file'])
 
-    # Setup overall logging level to WARNING by default, going more verbose
-    # for each new -v, to INFO and then DEBUG and finally ALL with 3 -v's
-
-    numeric_level = max(3 - options.verbose_count, 0) * 10
-    logging.basicConfig(level=numeric_level, filename=logfile)
+    # Setup the logging
+    if 'log_level' in options:
+        logging.basicConfig(level=options['job_log_level'], filename=logfile)
 
     # Set the logging level for the JobServer itself
-    logger.setLevel(options.jobserver_log_level)
+    logger.setLevel(options['log_level'])
 
     # Get the database file / instance
     db_path = datastore / 'seamm.db'
 
     jobserver = seamm_jobserver.JobServer(
-        db_path=db_path, check_interval=options.check_interval, logger=logger
+        db_path=db_path,
+        check_interval=options['check_interval'],
+        logger=logger
     )
+
+    print(f"The JobServer is starting in {Path.cwd()}")
+    print(f"           version = {seamm_jobserver.__version__}")
+    print(f"         datastore = {db_path}")
+    print(f"    check interval = {options['check_interval']}")
+    print(f"          log file = {logfile}")
+
+    if len(ini_files_used) == 0:
+        print("No .ini files were used")
+    else:
+        print("The following .ini files were used:")
+        for filename in ini_files_used:
+            print(f"    {filename}")
+    print('')
+
+    logger.info(f"The JobServer is starting in {Path.cwd()}")
+    logger.info(f"           version = {seamm_jobserver.__version__}")
+    logger.info(f"         datastore = {db_path}")
+    logger.info(f"    check interval = {options['check_interval']}")
+    logger.info(f"          log file = {logfile}")
+
+    if len(ini_files_used) == 0:
+        logger.info("No .ini files were used")
+    else:
+        logger.info("The following .ini files were used:")
+        for filename in ini_files_used:
+            logger.info(f"    {filename}")
+    logger.info('')
 
     asyncio.run(jobserver.start())
 
