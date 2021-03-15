@@ -12,6 +12,7 @@ from seamm_jobserver.jobserver import JobServer  # noqa: F401
 
 # Handle versioneer
 from ._version import get_versions  # noqa: E402
+
 __author__ = """Paul Saxe"""
 __email__ = 'psaxe@molssi.org'
 versions = get_versions()
