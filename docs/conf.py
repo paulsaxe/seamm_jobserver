@@ -31,7 +31,7 @@ project_root = os.path.dirname(cwd)
 # version is used.
 sys.path.insert(0, project_root)
 
-import seamm_util  # noqa: E402
+import seamm_jobserver  # noqa: E402
 
 # -- General configuration ---------------------------------------------
 
@@ -199,7 +199,7 @@ html_show_copyright = False
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'seamm_utildoc'
+htmlhelp_basename = 'seamm_jobserverdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------
