@@ -55,7 +55,7 @@ class JobServer(object):
                 self._db = sqlite3.connect(value)
                 # temporary!
                 # cursor = self._db.cursor()
-                # cursor.execute("UPDATE job SET status='Submitted'")
+                # cursor.execute("UPDATE jobs SET status='Submitted'")
                 # self.db.commit()
             self._db_path = value
 
@@ -114,8 +114,9 @@ class JobServer(object):
     def check_for_new_jobs(self):
         """Check the database for new jobs that are runnable."""
         cursor = self.db.cursor()
+
         self.logger.debug("Checking jobs in datastore")
-        cursor.execute("SELECT id, path FROM job WHERE status = 'Submitted'")
+        cursor.execute("SELECT id, path FROM jobs WHERE status = 'Submitted'")
         while True:
             result = cursor.fetchone()
             if result is None:
@@ -124,10 +125,12 @@ class JobServer(object):
 
             cursor = self.db.cursor()
             cursor.execute(
-                "UPDATE job SET status='Running', started = ? WHERE id = ?",
+                "UPDATE jobs SET status='Running', started = ? WHERE id = ?",
                 (datetime.utcnow(), job_id)
             )
             self.db.commit()
+
+            print(f"Starting job {job_id} at {path}")
 
             self.start_job(job_id, path)
 
@@ -168,9 +171,10 @@ class JobServer(object):
                 self.logger.info(
                     'Job {} finished, code={}.'.format(job_id, status)
                 )
+                print(f"Job {job_id} finished.")
                 cursor = self.db.cursor()
                 cursor.execute(
-                    "UPDATE job SET status='Finished', finished = ? "
+                    "UPDATE jobs SET status='Finished', finished = ? "
                     "WHERE id = ?", (datetime.utcnow(), job_id)
                 )
                 self.db.commit()

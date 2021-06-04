@@ -8,7 +8,7 @@ import asyncio
 import logging
 from pathlib import Path
 
-import seamm
+import seamm_util
 import seamm_jobserver
 
 logger = logging.getLogger('JobServer')
@@ -18,13 +18,7 @@ def run():
     """The standalone JobServer app.
     """
 
-    parser = seamm.getParser(
-        ini_files=[
-            'etc/seamm/jobserver.ini',
-            '~/.seamm/jobserver.ini',
-            'jobserver.ini'
-        ],
-    )  # yapf: disable
+    parser = seamm_util.seamm_parser("JobServer")
 
     parser.add_parser('JobServer')
 
@@ -35,30 +29,9 @@ def run():
         type=str.upper,
         choices=['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
         help=(
-            "The level of informational output, defaults to "
-            "'%(default)s'"
-        )
-    )
-
-    parser.add_argument(
-        'JobServer',
-        '--job-log-level',
-        default='WARNING',
-        type=str.upper,
-        choices=['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-        help=(
             "The level of informational output for jobs, defaults to "
             "'%(default)s'"
         )
-    )
-
-    parser.add_argument(
-        'JobServer',
-        "--datastore",
-        dest="datastore",
-        default='.',
-        action="store",
-        help="The datastore (directory) for this run."
     )
 
     parser.add_argument(
@@ -72,7 +45,7 @@ def run():
     parser.add_argument(
         'JobServer',
         "--log-file",
-        default='${datastore}/logs/jobserver.log',
+        default='${SEAMM:root}/logs/jobserver.log',
         action="store",
         help="Where to save the logs."
     )
@@ -80,29 +53,24 @@ def run():
     # Get the options
     parser.parse_args()
     options = parser.get_options('JobServer')
+    seamm_options = parser.get_options('SEAMM')
     ini_files_used = parser.get_ini_files()
-
-    # Where is the datastore?
-    datastore = Path(options['datastore']).expanduser()
 
     # Make sure the logs folder exists (avoid FileNotFoundError)
     logfile = Path(options['log_file'])
 
     # Setup the logging
     if 'log_level' in options:
-        logging.basicConfig(level=options['job_log_level'], filename=logfile)
+        logging.basicConfig(level=options['log_level'], filename=logfile)
 
     # Set the logging level for the JobServer itself
-    logger.setLevel(options['log_level'])
+    logger.setLevel(seamm_options['log_level'])
+
+    # Where is the datastore?
+    datastore = Path(seamm_options['datastore']).expanduser()
 
     # Get the database file / instance
     db_path = datastore / 'seamm.db'
-
-    jobserver = seamm_jobserver.JobServer(
-        db_path=db_path,
-        check_interval=options['check_interval'],
-        logger=logger
-    )
 
     print(f"The JobServer is starting in {Path.cwd()}")
     print(f"           version = {seamm_jobserver.__version__}")
@@ -131,6 +99,12 @@ def run():
         for filename in ini_files_used:
             logger.info(f"    {filename}")
     logger.info('')
+
+    jobserver = seamm_jobserver.JobServer(
+        db_path=db_path,
+        check_interval=options['check_interval'],
+        logger=logger
+    )
 
     asyncio.run(jobserver.start())
 
