@@ -8,8 +8,8 @@ dependencies:
   - python
   - pip
 
-  # molsystem requires, and only available via Conda.
-  - openbabel
+  # Dependencies for this module
+  - seamm
 
   # Testing
   - black
@@ -22,8 +22,6 @@ dependencies:
 
   # Pip-only installs
   - pip:
-    - seamm
-
     # Testing
     - yapf
 
