@@ -116,7 +116,7 @@ class JobServer(object):
         cursor = self.db.cursor()
 
         self.logger.debug("Checking jobs in datastore")
-        cursor.execute("SELECT id, path FROM jobs WHERE status = 'Submitted'")
+        cursor.execute("SELECT id, path FROM jobs WHERE status = 'submitted'")
         while True:
             result = cursor.fetchone()
             if result is None:
@@ -126,7 +126,7 @@ class JobServer(object):
             cursor = self.db.cursor()
             cursor.execute(
                 "UPDATE jobs SET status='Running', started = ? WHERE id = ?",
-                (datetime.utcnow(), job_id)
+                (datetime.now(), job_id)
             )
             self.db.commit()
 
@@ -174,8 +174,8 @@ class JobServer(object):
                 print(f"Job {job_id} finished.")
                 cursor = self.db.cursor()
                 cursor.execute(
-                    "UPDATE jobs SET status='Finished', finished = ? "
-                    "WHERE id = ?", (datetime.utcnow(), job_id)
+                    "UPDATE jobs SET status='finished', finished = ? "
+                    "WHERE id = ?", (datetime.now(), job_id)
                 )
                 self.db.commit()
         for job_id in finished:
