@@ -6,7 +6,7 @@
 
 import asyncio
 # import concurrent.futures
-from datetime import datetime
+from datetime import datetime, timezone
 import functools
 import logging
 import multiprocessing
@@ -55,7 +55,7 @@ class JobServer(object):
                 self._db = sqlite3.connect(value)
                 # temporary!
                 # cursor = self._db.cursor()
-                # cursor.execute("UPDATE jobs SET status='Submitted'")
+                # cursor.execute("UPDATE jobs SET status='submitted'")
                 # self.db.commit()
             self._db_path = value
 
@@ -123,10 +123,11 @@ class JobServer(object):
                 break
             job_id, path = result
 
+            current_time = datetime.now(timezone.utc)
             cursor = self.db.cursor()
             cursor.execute(
-                "UPDATE jobs SET status='Running', started = ? WHERE id = ?",
-                (datetime.now(), job_id)
+                "UPDATE jobs SET status='running', started = ? WHERE id = ?",
+                (current_time, job_id)
             )
             self.db.commit()
 
@@ -173,9 +174,10 @@ class JobServer(object):
                 )
                 print(f"Job {job_id} finished.")
                 cursor = self.db.cursor()
+                current_time = datetime.now(timezone.utc)
                 cursor.execute(
                     "UPDATE jobs SET status='finished', finished = ? "
-                    "WHERE id = ?", (datetime.now(), job_id)
+                    "WHERE id = ?", (current_time, job_id)
                 )
                 self.db.commit()
         for job_id in finished:
