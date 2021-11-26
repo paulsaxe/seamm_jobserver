@@ -1,0 +1,29 @@
+seamm\_jobserver package
+========================
+
+Submodules
+----------
+
+seamm\_jobserver.jobserver module
+---------------------------------
+
+.. automodule:: seamm_jobserver.jobserver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+seamm\_jobserver.run\_jobserver module
+--------------------------------------
+
+.. automodule:: seamm_jobserver.run_jobserver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: seamm_jobserver
+   :members:
+   :undoc-members:
+   :show-inheritance:
