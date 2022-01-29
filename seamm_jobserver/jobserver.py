@@ -9,6 +9,7 @@ import asyncio
 # import concurrent.futures
 from datetime import datetime, timezone
 import functools
+import json
 import logging
 import multiprocessing
 import sqlite3
@@ -109,12 +110,17 @@ class JobServer(object):
         cursor = self.db.cursor()
 
         self.logger.debug("Checking jobs in datastore")
-        cursor.execute("SELECT id, path FROM jobs WHERE status = 'submitted'")
+        cursor.execute(
+            "SELECT id, path, json_extract(parameters, '$.cmdline')"
+            "  FROM jobs"
+            " WHERE status = 'submitted'"
+        )
         while True:
             result = cursor.fetchone()
             if result is None:
                 break
-            job_id, path = result
+            job_id, path, cmdline = result
+            cmdline = json.loads(cmdline)
 
             current_time = datetime.now(timezone.utc)
             cursor = self.db.cursor()
@@ -126,9 +132,9 @@ class JobServer(object):
 
             print(f"Starting job {job_id} at {path}")
 
-            self.start_job(job_id, path)
+            self.start_job(job_id, path, cmdline)
 
-    def start_job(self, job_id, wdir):
+    def start_job(self, job_id, wdir, cmdline=""):
         """Run the given job.
 
         Parameters
@@ -144,6 +150,7 @@ class JobServer(object):
                 "job_id": job_id,
                 "wdir": wdir,
                 "in_jobserver": True,
+                "cmdline": cmdline,
             },
             name="Job_{:06d}".format(job_id),
         )
