@@ -56,8 +56,8 @@ jobs:
       shell: bash -l {0}
 
       run: |
+        black --extend-exclude '_version.py' --check --diff seamm_jobserver tests
         flake8 seamm_jobserver tests
-        yapf --diff --recursive seamm_jobserver tests
       
   test:
     name: Test ${{ matrix.os }} Py${{ matrix.python-version }}
