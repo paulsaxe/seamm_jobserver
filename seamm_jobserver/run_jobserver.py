@@ -22,6 +22,13 @@ def run():
     parser.add_parser("JobServer")
 
     parser.add_argument(
+        "SEAMM",
+        "--version",
+        action="version",
+        version=f"JobServer version {seamm_jobserver.__version__}",
+    )
+
+    parser.add_argument(
         "JobServer",
         "--log-level",
         default="WARNING",
