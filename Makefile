@@ -50,7 +50,7 @@ clean-test: ## remove test and coverage artifacts
 
 lint: ## check style with yapf
 	black --check --diff --extend-exclude '_version.py' $(MODULE) tests
-	flake8 $(MODULE) tests
+	flake8 --color never $(MODULE) tests
 
 format: ## reformat with with yapf and isort
 	black --extend-exclude '_version.py' $(MODULE) tests
