@@ -82,7 +82,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'jobserver=seamm_jobserver.run_jobserver:run'
+            'jobserver=seamm_jobserver.jobserver:run',
+            'seamm-jobserver=seamm_jobserver.jobserver:run'
         ],
     }
 )
