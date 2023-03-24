@@ -8,13 +8,13 @@ Installation
 Stable release
 --------------
 
-To install the SEAMM Widgets, run this command in your terminal:
+To install the SEAMM JobServer, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install seamm_widgets
+    $ pip install seamm-jobserver
 
-This is the preferred method to install the SEAMM Widgets, as it will always install the most recent stable release. 
+This is the preferred method to install SEAMM JobServer Step, as it will always install the most recent stable release. 
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -26,19 +26,19 @@ you through the process.
 From sources
 ------------
 
-The sources for the SEAMM Widgets can be downloaded from the `Github repo`_.
+The sources for SEAMM JobServer can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/molssi-seamm/seamm_widgets
+    $ git clone git://github.com/molssi-seamm/seamm_jobserver
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/molssi-seamm/seamm_widgets/tarball/master
+    $ curl  -OL https://github.com/molssi-seamm/seamm_jobserver/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/molssi-seamm/seamm_widgets
-.. _tarball: https://github.com/molssi-seamm/seamm_widgets/tarball/master
+.. _Github repo: https://github.com/molssi-seamm/seamm_jobserver
+.. _tarball: https://github.com/molssi-seamm/seamm_jobserver/tarball/master
