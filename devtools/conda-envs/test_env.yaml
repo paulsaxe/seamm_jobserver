@@ -10,6 +10,7 @@ dependencies:
 
   # Dependencies for this module
   - seamm
+  - psutil
 
   # Testing
   - black
@@ -17,8 +18,6 @@ dependencies:
   - flake8
   - pytest
   - pytest-cov
-
-  - py-cpuinfo
 
   # Documentation
   - pydata-sphinx-theme
