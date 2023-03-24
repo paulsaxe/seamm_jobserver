@@ -22,7 +22,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-with open('requirements_install.txt') as fd:
+with open('requirements.txt') as fd:
     requirements = fd.read()
 
 setup(
@@ -82,7 +82,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'jobserver=seamm_jobserver.run_jobserver:run'
+            'jobserver=seamm_jobserver.jobserver:run',
+            'seamm-jobserver=seamm_jobserver.jobserver:run'
         ],
     }
 )

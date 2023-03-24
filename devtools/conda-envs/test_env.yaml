@@ -10,6 +10,7 @@ dependencies:
 
   # Dependencies for this module
   - seamm
+  - psutil
 
   # Testing
   - black
@@ -18,16 +19,12 @@ dependencies:
   - pytest
   - pytest-cov
 
-  - py-cpuinfo
+  # Documentation
+  - pydata-sphinx-theme
+  - sphinx-design
 
   # Pip-only installs
   - pip:
-    # Testing
-    - yapf
-
     # Documentation
-    - rinohtype
-    - pygments
-    - sphinx-rtd-theme
-    - pystemmer
-
+    - sphinx-copybutton
+    - sphinxnotes-strike

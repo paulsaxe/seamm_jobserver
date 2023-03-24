@@ -3,54 +3,56 @@ SEAMM JobServer
 ===============
 
 
-.. image:: https://img.shields.io/travis/molssi-seamm/seamm_jobserver.svg
-           :target: https://travis-ci.org/molssi-seamm/seamm_jobserver
-	   :alt: Build Status
+.. image:: https://img.shields.io/github/issues-pr-raw/molssi-seamm/seamm_jobserver
+   :target: https://github.com/molssi-seamm/seamm_jobserver/pulls
+   :alt: GitHub pull requests
 
-.. image:: https://codecov.io/gh/molssi-seamm/seamm_jobserver/branch/master/graph/badge.svg
-	   :target: https://codecov.io/gh/molssi-seamm/seamm_jobserver
-	   :alt: Code Coverage
+.. image:: https://github.com/molssi-seamm/seamm_jobserver/workflows/CI/badge.svg
+   :target: https://github.com/molssi-seamm/seamm_jobserver/actions
+   :alt: Build Status
 
-.. image:: https://img.shields.io/lgtm/grade/python/g/molssi-seamm/seamm_jobserver.svg?logo=lgtm&logoWidth=18
-	   :target: https://lgtm.com/projects/g/molssi-seamm/seamm_jobserver/context:python
-	   :alt: Code Quality
+.. image:: https://codecov.io/gh/molssi-seamm/seamm_jobserver/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/molssi-seamm/seamm_jobserver
+   :alt: Code Coverage
 
-.. image:: https://readthedocs.org/projects/mopac-step/badge/?version=latest
-           :target: https://mopac-step.readthedocs.io/en/latest/?badge=latest
-	   :alt: Documentation Status
+.. image:: https://github.com/molssi-seamm/seamm_jobserver/workflows/CodeQL/badge.svg
+   :target: https://github.com/molssi-seamm/seamm_jobserver/security/code-scanning
+   :alt: Code Quality
 
-.. image:: https://pyup.io/repos/github/molssi-seamm/seamm_jobserver/shield.svg
-	   :target: https://pyup.io/repos/github/molssi-seamm/seamm_jobserver/
-	   :alt: Updates for Dependencies
+.. image:: https://github.com/molssi-seamm/seamm_jobserver/workflows/Release/badge.svg
+   :target: https://molssi-seamm.github.io/seamm_jobserver/index.html
+   :alt: Documentation Status
 
 .. image:: https://img.shields.io/pypi/v/seamm_jobserver.svg
-           :target: https://pypi.python.org/pypi/seamm_jobserver
-	   :alt: PyPi VERSION
+   :target: https://pypi.python.org/pypi/seamm_jobserver
+   :alt: PyPi VERSION
 
 
 The JobServer for the SEAMM environment
 
 
 * Free software: BSD license
-* Documentation: https://seamm-jobserver.readthedocs.io.
+* Documentation: https://molssi-seamm.github.io/seamm_jobserver/index.html
+* Code: https://github.com/molssi-seamm/seamm_jobserver
 
 
 Features
 --------
 
-* TODO
+The SEAMM JobServer handles executing Jobs for the Dashboard.
 
-Credits
--------
 
-This package was created with Cookiecutter_ and the `molssi-seamm/cookiecutter-seamm-plugin`_ project template.
+Acknowledgements
+----------------
+
+This package was created with the `molssi-seamm/cookiecutter-seamm-plugin`_ tool, which
+is based on the excellent Cookiecutter_.
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`molssi-seamm/cookiecutter-seamm-plugin`: https://github.com/molssi-seamm/cookiecutter-seamm-plugin
 
-Developed by the Molecular Sciences Software Institute (MolSSI_),
-which receives funding from the `National Science Foundation`_ under
-award OAC-1547580 and CHE-2136142.
+Developed by the Molecular Sciences Software Institute (MolSSI_), which receives funding
+from the `National Science Foundation`_ under award CHE-2136142.
 
-.. _MolSSI: https://www.molssi.org
+.. _MolSSI: https://molssi.org
 .. _`National Science Foundation`: https://www.nsf.gov
