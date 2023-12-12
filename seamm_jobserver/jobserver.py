@@ -156,12 +156,16 @@ class JobServer(collections.abc.MutableMapping):
                 except Exception:
                     status = "unknown"
                 self.logger.debug(f"Job {job_id} finished, code={status}.")
-                self.logger.info(f"Job {job_id} finished (pid={pid}).")
                 if status == 0:
+                    self.logger.info(f"Job {job_id} finished successfully ({pid=}).")
                     self.successful_jobs += 1
                 elif status == "unknown":
+                    self.logger.info(
+                        f"Job {job_id} finished with unknown status ({pid=})."
+                    )
                     self.ended_jobs += 1
                 else:
+                    self.logger.info(f"Job {job_id} failed ({pid=} {status=}).")
                     self.failed_jobs += 1
         for job_id in finished:
             del self._jobs[job_id]
@@ -408,6 +412,7 @@ class JobServer(collections.abc.MutableMapping):
 
             status_file = self.options["status_file"]
             if status_file != "none":
+                status_file = Path(status_file).expanduser()
                 with open(status_file, "w") as fd:
                     json.dump(status, fd, indent=4)
 

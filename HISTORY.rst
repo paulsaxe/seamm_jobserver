@@ -1,6 +1,9 @@
 =======
 History
 =======
+2023.12.12 -- Improved the output in the GUI.
+   * Improved the output to the GUI
+   * Fixed a bug in the file path for the status file.
 
 2023.3.23 -- Substantial improvements to JobServer
    * Switched to independent process for Jobs, which means they are fully independent of
