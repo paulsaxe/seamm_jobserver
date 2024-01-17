@@ -1,6 +1,8 @@
 =======
 History
 =======
+2024.1.17 -- Changes to support running in Docker containers.
+
 2023.12.12 -- Improved the output in the GUI.
    * Improved the output to the GUI
    * Fixed a bug in the file path for the status file.

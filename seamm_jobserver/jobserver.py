@@ -630,10 +630,19 @@ class JobServer(collections.abc.MutableMapping):
         cmd.append(str(job_id))
         cmd.append(str(wdir))
         cmd.append(str(self.db_path))
+
+        # Check if in docker container
+        cgroup = Path("/proc/self/cgroup")
+        if (
+            Path("/.dockerenv").is_file()
+            or cgroup.is_file()
+            and "docker" in cgroup.read_text()
+        ):
+            cmd.append("--executor")
+            cmd.append("docker")
+
         cmd.extend(cmdline)
 
-        print(f"{cmd=}")
-        print(f"{wdir=}")
         process = psutil.Popen(
             cmd,
             cwd=wdir,
