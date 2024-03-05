@@ -7,6 +7,7 @@ import collections.abc
 from datetime import datetime, timezone
 import json
 import logging
+import os
 from pathlib import Path
 import psutil
 import shutil
@@ -640,6 +641,11 @@ class JobServer(collections.abc.MutableMapping):
         ):
             cmd.append("--executor")
             cmd.append("docker")
+
+        # Environment variable for debug output
+        if "SEAMM_LOG_LEVEL" in os.environ:
+            cmd.append("--log-level")
+            cmd.append(os.environ["SEAMM_LOG_LEVEL"])
 
         cmd.extend(cmdline)
 

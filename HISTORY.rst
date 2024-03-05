@@ -1,6 +1,10 @@
 =======
 History
 =======
+2024.4.5 -- Adding support for debugging
+   * Use the value of the environment variable SEAMM_LOG_LEVEL to set the log level for
+     jobs. DEBUG, INFO, WARNING are three useful levels.
+     
 2024.1.17 -- Changes to support running in Docker containers.
 
 2023.12.12 -- Improved the output in the GUI.
