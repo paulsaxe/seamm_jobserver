@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-seamm_jobserver
+"""seamm_jobserver
 The JobServer for the SEAMM environment.
 """
 
