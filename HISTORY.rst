@@ -1,6 +1,8 @@
 =======
 History
 =======
+2024.4.11 -- Correcting description of this package
+
 2024.4.5 -- Adding support for debugging
    * Use the value of the environment variable SEAMM_LOG_LEVEL to set the log level for
      jobs. DEBUG, INFO, WARNING are three useful levels.
