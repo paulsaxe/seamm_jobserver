@@ -23,6 +23,7 @@ import seamm_util
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
 
+
 def run():
     """Helper routine to run the JobServer from the command-line"""
     jobserver = seamm_jobserver.JobServer()
