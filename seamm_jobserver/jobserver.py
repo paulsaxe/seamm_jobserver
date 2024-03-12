@@ -21,6 +21,7 @@ import seamm_jobserver
 import seamm_util
 
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
 
 
 def run():
@@ -157,7 +158,7 @@ class JobServer(collections.abc.MutableMapping):
                 except Exception:
                     status = "unknown"
                 self.logger.debug(f"Job {job_id} finished, code={status}.")
-                if status == 0:
+                if status is None or status == 0:
                     self.logger.info(f"Job {job_id} finished successfully ({pid=}).")
                     self.successful_jobs += 1
                 elif status == "unknown":

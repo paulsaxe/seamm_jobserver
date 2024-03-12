@@ -1,6 +1,10 @@
 =======
 History
 =======
+2024.4.12 -- Fixed issue with status of finished jobs
+   * Fixed a problem if a job returned a status of None, which was reported as an
+     error.
+     
 2024.4.11 -- Correcting description of this package
 
 2024.4.5 -- Adding support for debugging
